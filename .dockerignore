@@ -1,0 +1,10 @@
+venv/
+.gitignore
+.gitattributes
+.git/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+.env  # Исключаем .env из образа
