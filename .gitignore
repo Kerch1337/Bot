@@ -365,3 +365,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /venv/.gitignore
 /venv/pyvenv.cfg
+/.env

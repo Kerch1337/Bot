@@ -1,4 +1,4 @@
-venv/
+п»їvenv/
 .gitignore
 .gitattributes
 .git/
@@ -7,4 +7,4 @@ __pycache__/
 *.pyo
 *.pyd
 .DS_Store
-.env  # Исключаем .env из образа
+.env
