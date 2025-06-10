@@ -16,41 +16,42 @@
 
 ## Структура проекта
 
+<pre>
 Bot/
 ├── .dockerignore
 ├── .gitattributes
 ├── .gitignore
-├── .env
 ├── docker-compose.yml
 ├── Dockerfile
 ├── README.md
 ├── requirements.txt
 └── app/
-├── bot.py
-├── main.py
-├── database/
-│ ├── db.py
-│ └── model.py
-├── handlers/
-│ ├── commands.py
-│ └── messages.py
-├── images/
-│ └── okak.jpg
-├── keyboards/
-│ └── reply.py
-└── utils/
-└── logger.py
+    ├── bot.py
+    ├── main.py
+    ├── database/
+    │   ├── db.py
+    │   └── model.py
+    ├── handlers/
+    │   ├── commands.py
+    │   └── messages.py
+    ├── images/
+    │   └── okak.jpg
+    ├── keyboards/
+    │   └── reply.py
+    └── utils/
+        └── logger.py
+</pre>
 
-Создать файл .env в корне проекта:
+## Создать файл .env в корне проекта:
 
-BOT_TOKEN=ваш_токен_бота
-DB_USER=postgres
-DB_PASSWORD=postgres_password
-DB_HOST=db
-DB_PORT=5432
-DB_NAME=bot_db
+BOT_TOKEN=ваш_токен_бота  
+DB_USER=postgres  
+DB_PASSWORD=postgres_password  
+DB_HOST=db  
+DB_PORT=5432  
+DB_NAME=bot_db  
 
-Собрать и запустить контейнеры с проектом:
+## Собрать и запустить контейнеры с проектом:
 
-docker-compose build --no-cache
+docker-compose build --no-cache  
 docker-compose up -d
