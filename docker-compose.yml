@@ -13,6 +13,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - bot_net
 
   bot:
     build: .
@@ -26,6 +28,8 @@ services:
       db:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - bot_net
 
   alembic:
     build:
@@ -39,6 +43,12 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - bot_net
+
+networks:
+  bot_net:
+    driver: bridge
 
 volumes:
   pg_data:

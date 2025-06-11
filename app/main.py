@@ -22,8 +22,7 @@ def on_startup():
     """Действия при запуске бота"""
     try:
         engine, _ = init_db()
-        with engine.begin() as conn:
-            conn.run_sync(Base.metadata.create_all)
+        Base.metadata.create_all(bind=engine)
         logger.info("Таблицы БД успешно верифицированы")
     except Exception as e:
         logger.critical(f"Ошибка инициализации БД: {str(e)}")
@@ -33,11 +32,6 @@ def on_startup():
 if __name__ == "__main__":
     # Регистрация обработчиков
     register_handlers(dp)
-    
-    # Запуск бота с обработчиками жизненного цикла
-    from aiogram.fsm.storage.memory import MemoryStorage
-    
-    dp = Dispatcher(storage=MemoryStorage())
     dp.startup.register(on_startup)
     
     logger.info("Бот запущен и ожидает сообщений...")
