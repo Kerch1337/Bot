@@ -1,4 +1,4 @@
-﻿# Telegram Bot на aiogram 3.x с Docker
+# Telegram Bot на aiogram 3.x с Docker
 
 Простой Telegram-бот с обработкой команд, текстовых сообщений и интеграцией с PostgreSQL.
 
