@@ -3,7 +3,8 @@
 Простой Telegram-бот с обработкой команд, текстовых сообщений и интеграцией с PostgreSQL.
 
 ## Функционал
-- Обработка команды `/start`
+- Обработка команды `/start` - начать общение
+- Обработка команды `/re_chat` - история сообщений
 - Ответы на текстовые сообщения:
   - `привет` - приветствие
   - `помощь` - список команд
@@ -22,24 +23,33 @@ Bot/
 ├── .gitattributes
 ├── .gitignore
 ├── docker-compose.yml
+├── alembic.ini
 ├── Dockerfile
+├── Dockerfile.alembic
 ├── README.md
 ├── requirements.txt
-└── app/
-    ├── bot.py
-    ├── main.py
-    ├── database/
-    │   ├── db.py
-    │   └── model.py
-    ├── handlers/
-    │   ├── commands.py
-    │   └── messages.py
-    ├── images/
-    │   └── okak.jpg
-    ├── keyboards/
-    │   └── reply.py
-    └── utils/
-        └── logger.py
+├── app/
+│   ├── bot.py
+│   ├── main.py
+│   ├── database/
+│   │   ├── db.py
+│   │   └── model.py
+│   ├── handlers/
+│   │   ├── commands.py
+│   │   └── messages.py
+│   ├── images/
+│   │   └── okak.jpg
+│   ├── middlewares/
+│   │   └── middleware.py
+│   ├── keyboards/
+│   │   └── reply.py
+│   └── utils/
+│       └── logger.py
+└── migrations/
+    ├── version/
+    ├── env.py
+    ├── README
+    └── script.py.mako
 </pre>
 
 ## Создать файл .env в корне проекта:
