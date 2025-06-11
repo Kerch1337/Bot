@@ -1,6 +1,6 @@
 import os
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import sessionmaker, declarative_base, scoped_session
 from dotenv import load_dotenv
 from utils.logger import logger
 
@@ -36,21 +36,22 @@ def init_db():
     logger.debug("Инициализация подключения к БД")
     
     # Создание движка и сессии
-    engine = create_engine(DATABASE_URL, pool_pre_ping=True)
-    SessionLocal = sessionmaker(
-        autocommit=False, 
-        autoflush=False, 
-        bind=engine,
-        expire_on_commit=False
+    engine = create_engine(
+        DATABASE_URL,
+        pool_pre_ping=True,
+        echo=True  # Логировать SQL-запросы
+    )
+    Session = scoped_session(
+        sessionmaker(
+            autocommit=False,
+            autoflush=False,
+            bind=engine
+        )
     )
     
-    return engine, SessionLocal
+    return engine, Session
 
-def get_db_session():
-    """Фабрика сессий для использования в DI"""
-    engine, SessionLocal = init_db()
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+def get_session():
+    """Фабрика сессий для middleware"""
+    _, Session = init_db()
+    return Session

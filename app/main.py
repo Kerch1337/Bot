@@ -1,38 +1,45 @@
-from aiogram import Dispatcher
+# main.py
+from aiogram import Dispatcher, Bot
+from aiogram.fsm.storage.memory import MemoryStorage
 from utils.logger import logger
-from database.db import Base, init_db, get_db_session
+from database.db import Base, init_db, get_session
 from handlers import commands, messages
 from dotenv import load_dotenv
 import os
-
-# Инициализация бота должна происходить ПОСЛЕ инициализации БД
-# Чтобы избежать циклических импортов, выносим инициализацию бота в этот файл
-from aiogram import Bot
+from contextlib import contextmanager
+from sqlalchemy.orm import Session
 
 load_dotenv('.env', encoding='utf-8')
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 bot = Bot(token=BOT_TOKEN)
-dp = Dispatcher()
+storage = MemoryStorage()
+dp = Dispatcher(storage=storage)
+
+# Middleware для синхронной сессии
+class DbSessionMiddleware:
+    def __init__(self, session_factory):
+        self.session_factory = session_factory
+
+    def __call__(self, handler, event, data):
+        with self.session_factory() as session:
+            data["session"] = session
+            return handler(event, data)
+
+@contextmanager
+def lifespan():
+    engine, _ = init_db()
+    Base.metadata.create_all(bind=engine)
+    logger.info("Таблицы БД успешно верифицированы")
+    yield
 
 def register_handlers(dp: Dispatcher):
     dp.include_routers(commands.router, messages.router)
 
-def on_startup():
-    """Действия при запуске бота"""
-    try:
-        engine, _ = init_db()
-        Base.metadata.create_all(bind=engine)
-        logger.info("Таблицы БД успешно верифицированы")
-    except Exception as e:
-        logger.critical(f"Ошибка инициализации БД: {str(e)}")
-        # Выход при критической ошибке БД
-        exit(1)
-
 if __name__ == "__main__":
-    # Регистрация обработчиков
+    session_factory = get_session()
+    dp.update.middleware(DbSessionMiddleware(session_factory))
     register_handlers(dp)
-    dp.startup.register(on_startup)
     
     logger.info("Бот запущен и ожидает сообщений...")
     dp.run_polling(bot)

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Table
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Table, BigInteger
 from .db import Base
 from datetime import datetime
 from sqlalchemy.orm import relationship
@@ -15,8 +15,10 @@ class User(Base):
     __tablename__ = 'users'
     
     id = Column(Integer, primary_key=True)
-    username = Column(String(50), unique=True, nullable=False)
-    last_name = Column(String(50), nullable=True) 
+    telegram_id = Column(BigInteger, unique=True, nullable=False)  # ID аккаунта в TG
+    first_name = Column(String(50), nullable=False)  # Имя пользователя
+    username = Column(String(50), nullable=True)
+    last_name = Column(String(50), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     
     # Связи
