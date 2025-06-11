@@ -38,6 +38,7 @@ services:
     environment:
       - PYTHONPATH=/app/app
     container_name: alembic
+    command: ["./wait-for-it.sh", "postgres:5432", "--", "alembic", "upgrade", "head"]
     volumes:
       - .:/app
     env_file:

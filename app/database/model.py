@@ -65,3 +65,4 @@ class Message(Base):
     # Связи
     sender = relationship('User', back_populates='sent_messages')
     dialogue = relationship('Dialogue', back_populates='messages')
+

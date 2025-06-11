@@ -44,6 +44,7 @@ Bot/
 
 ## Создать файл .env в корне проекта:
 
+DB_URL=postgresql://user:password@host:port/name_base
 BOT_TOKEN=ваш_токен_бота  
 DB_USER=postgres  
 DB_PASSWORD=postgres_password  
@@ -55,3 +56,17 @@ DB_NAME=bot_db
 
 docker-compose build --no-cache  
 docker-compose up -d
+
+## Миграции:
+
+Для создания миграции:  
+docker-compose run --rm alembic alembic revision --autogenerate -m "Описание"
+
+Для применения созданной миграции:  
+docker-compose run --rm alembic alembic upgrade head
+
+Для отката миграции:
+docker-compose run --rm alembic alembic downgrade -1
+
+## Команда чтобы зайти в БД:
+docker exec -it pg_db psql -U postgres -d mydatabase
