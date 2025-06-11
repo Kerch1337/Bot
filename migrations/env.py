@@ -15,9 +15,9 @@ root_dir = current_dir.parent  # Папка Bot/
 # Добавляем корень в sys.path
 sys.path.append(str(root_dir))
 
-from app.database.db import DATABASE_URL
-from app.database.model import * 
-from app.database.db import Base
+from database.db import DATABASE_URL
+from database.model import * 
+from database.db import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

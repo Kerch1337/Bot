@@ -35,6 +35,8 @@ services:
     build:
       dockerfile: Dockerfile.alembic
       context: .
+    environment:
+      - PYTHONPATH=/app/app
     container_name: alembic
     volumes:
       - .:/app
