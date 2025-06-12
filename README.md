@@ -29,7 +29,6 @@ Bot/
 ├── README.md
 ├── requirements.txt
 ├── app/
-│   ├── bot.py
 │   ├── main.py
 │   ├── database/
 │   │   ├── db.py
@@ -75,7 +74,7 @@ docker-compose run --rm alembic alembic revision --autogenerate -m "Описан
 Для применения созданной миграции:  
 docker-compose run --rm alembic alembic upgrade head
 
-Для отката миграции:
+Для отката миграции:  
 docker-compose run --rm alembic alembic downgrade -1
 
 ## Команда чтобы зайти в БД:
