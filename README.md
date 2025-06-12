@@ -1,9 +1,10 @@
-﻿# Telegram Bot на aiogram 3.x с Docker
+# Telegram Bot на aiogram 3.x с Docker
 
 Простой Telegram-бот с обработкой команд, текстовых сообщений и интеграцией с PostgreSQL.
 
 ## Функционал
-- Обработка команды `/start`
+- Обработка команды `/start` - начать общение
+- Обработка команды `/re_chat` - история сообщений
 - Ответы на текстовые сообщения:
   - `привет` - приветствие
   - `помощь` - список команд
@@ -22,28 +23,37 @@ Bot/
 ├── .gitattributes
 ├── .gitignore
 ├── docker-compose.yml
+├── alembic.ini
 ├── Dockerfile
+├── Dockerfile.alembic
 ├── README.md
 ├── requirements.txt
-└── app/
-    ├── bot.py
-    ├── main.py
-    ├── database/
-    │   ├── db.py
-    │   └── model.py
-    ├── handlers/
-    │   ├── commands.py
-    │   └── messages.py
-    ├── images/
-    │   └── okak.jpg
-    ├── keyboards/
-    │   └── reply.py
-    └── utils/
-        └── logger.py
+├── app/
+│   ├── main.py
+│   ├── database/
+│   │   ├── db.py
+│   │   └── model.py
+│   ├── handlers/
+│   │   ├── commands.py
+│   │   └── messages.py
+│   ├── images/
+│   │   └── okak.jpg
+│   ├── middlewares/
+│   │   └── middleware.py
+│   ├── keyboards/
+│   │   └── reply.py
+│   └── utils/
+│       └── logger.py
+└── migrations/
+    ├── version/
+    ├── env.py
+    ├── README
+    └── script.py.mako
 </pre>
 
 ## Создать файл .env в корне проекта:
 
+DB_URL=postgresql://user:password@host:port/name_base
 BOT_TOKEN=ваш_токен_бота  
 DB_USER=postgres  
 DB_PASSWORD=postgres_password  
@@ -55,3 +65,17 @@ DB_NAME=bot_db
 
 docker-compose build --no-cache  
 docker-compose up -d
+
+## Миграции:
+
+Для создания миграции:  
+docker-compose run --rm alembic alembic revision --autogenerate -m "Описание"
+
+Для применения созданной миграции:  
+docker-compose run --rm alembic alembic upgrade head
+
+Для отката миграции:  
+docker-compose run --rm alembic alembic downgrade -1
+
+## Команда чтобы зайти в БД:
+docker exec -it pg_db psql -U postgres -d mydatabase

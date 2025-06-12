@@ -366,3 +366,5 @@ FodyWeavers.xsd
 /venv/.gitignore
 /venv/pyvenv.cfg
 /.env
+/migrations/versions/2a8582754c51_описание_изменений.py
+/migrations/versions/66941f5ba20a_добавил_машину.py

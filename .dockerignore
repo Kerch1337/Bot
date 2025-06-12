@@ -1,4 +1,4 @@
-﻿venv/
+venv/
 .gitignore
 .gitattributes
 .git/
@@ -8,3 +8,5 @@ __pycache__/
 *.pyd
 .DS_Store
 .env
+.git
+.venv
