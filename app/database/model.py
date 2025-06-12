@@ -1,7 +1,13 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Table, BigInteger
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Table, BigInteger, Enum  # Добавляем Enum в импорт
 from .db import Base
 from datetime import datetime
 from sqlalchemy.orm import relationship
+import enum
+
+
+class UserRole(enum.Enum):
+    ADMIN = "admin"
+    USER = "user"
 
 # Ассоциативная таблица для связи многие-ко-многим между пользователями и диалогами
 user_dialogue_association = Table(
@@ -15,29 +21,22 @@ class User(Base):
     __tablename__ = 'users'
     
     id = Column(Integer, primary_key=True)
-    telegram_id = Column(BigInteger, unique=True, nullable=False)  # ID аккаунта в TG
-    first_name = Column(String(50), nullable=False)  # Имя пользователя
+    telegram_id = Column(BigInteger, unique=True, nullable=False)
+    first_name = Column(String(50), nullable=False)
     username = Column(String(50), nullable=True)
     last_name = Column(String(50), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+    role = Column(Enum(UserRole),  # Теперь Enum импортирован
+                  default=UserRole.USER, 
+                  nullable=False)
     
     # Связи
-    role_id = Column(Integer, ForeignKey('roles.id'))
     sent_messages = relationship('Message', back_populates='sender')
     dialogues = relationship(
         'Dialogue',
         secondary=user_dialogue_association,
         back_populates='participants'
     )
-
-class Role(Base):
-    __tablename__ = 'roles'
-    
-    id = Column(Integer, primary_key=True)
-    name = Column(String(30), unique=True, nullable=False)
-    description = Column(String(200))
-    
-    users = relationship('User', backref='role')
 
 class Dialogue(Base):
     __tablename__ = 'dialogues'

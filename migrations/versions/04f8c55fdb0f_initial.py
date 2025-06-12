@@ -1,8 +1,8 @@
 """initial
 
-Revision ID: 4be93cb78292
+Revision ID: 04f8c55fdb0f
 Revises: 
-Create Date: 2025-06-11 19:22:06.447932
+Create Date: 2025-06-12 10:56:27.321688
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '4be93cb78292'
+revision: str = '04f8c55fdb0f'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -26,13 +26,6 @@ def upgrade() -> None:
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('roles',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=30), nullable=False),
-    sa.Column('description', sa.String(length=200), nullable=True),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('name')
-    )
     op.create_table('users',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('telegram_id', sa.BigInteger(), nullable=False),
@@ -40,8 +33,7 @@ def upgrade() -> None:
     sa.Column('username', sa.String(length=50), nullable=True),
     sa.Column('last_name', sa.String(length=50), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
-    sa.Column('role_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['role_id'], ['roles.id'], ),
+    sa.Column('role', sa.Enum('ADMIN', 'USER', name='userrole'), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('telegram_id')
     )
@@ -73,6 +65,5 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_messages_sent_at'), table_name='messages')
     op.drop_table('messages')
     op.drop_table('users')
-    op.drop_table('roles')
     op.drop_table('dialogues')
     # ### end Alembic commands ###

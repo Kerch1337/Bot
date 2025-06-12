@@ -4,14 +4,13 @@ from aiogram.filters import Command
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-from database.model import User, Message
+from database.model import User, Message, UserRole
 from keyboards.reply import get_main_keyboard
 from utils.logger import logger
 
 router = Router()
 
 def get_or_create_user(session, tg_user: types.User) -> User:
-    """Синхронная версия создания/получения пользователя"""
     try:
         user = session.scalar(
             select(User)
@@ -23,8 +22,10 @@ def get_or_create_user(session, tg_user: types.User) -> User:
                 telegram_id=tg_user.id,
                 first_name=tg_user.first_name,
                 username=tg_user.username,
-                last_name=tg_user.last_name
-            )
+                last_name=tg_user.last_name,
+                role=UserRole.USER  # Без .value
+        )
+            
             session.add(user)
             session.commit()
             logger.info(f"Создан новый пользователь: {user.id} ({tg_user.full_name})")

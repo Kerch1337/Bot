@@ -1,19 +1,9 @@
-from aiogram import BaseMiddleware
-from sqlalchemy.orm import sessionmaker
-from typing import Callable, Dict, Any, Awaitable
-from aiogram.types import Message
 
-class DbSessionMiddleware(BaseMiddleware):
-    def __init__(self, session_pool: sessionmaker):
-        super().__init__()
-        self.session_pool = session_pool
+class DbSessionMiddleware:
+    def __init__(self, session_factory):
+        self.session_factory = session_factory
 
-    def __call__(
-        self,
-        handler: Callable[[Message, Dict[str, Any]], Awaitable[Any]],
-        event: Message,
-        data: Dict[str, Any]
-    ) -> Any:
-        with self.session_pool() as session:
+    def __call__(self, handler, event, data):
+        with self.session_factory() as session:
             data["session"] = session
             return handler(event, data)
