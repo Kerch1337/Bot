@@ -59,7 +59,9 @@ DB_USER=postgres
 DB_PASSWORD=postgres_password  
 DB_HOST=db  
 DB_PORT=5432  
-DB_NAME=bot_db  
+DB_NAME=bot_db
+OPENAI_API_KEY=xxxx
+PROXY_URL=http://login:password@ip:port
 
 ## Собрать и запустить контейнеры с проектом:
 
