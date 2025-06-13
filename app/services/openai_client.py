@@ -1,42 +1,45 @@
 ﻿import os
-import openai
-from openai import OpenAI
-from openai import OpenAIError
-from openai._exceptions import AuthenticationError, RateLimitError
-from database.model import Message, Dialogue
-from sqlalchemy.orm import Session
-from sqlalchemy import select
 from datetime import datetime
+import openai
+from openai import AsyncOpenAI
+from openai._exceptions import AuthenticationError, RateLimitError, OpenAIError
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from database.model import Message, Dialogue
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 PROXY_URL = os.getenv("PROXY_URL")
 os.environ["http_proxy"] = PROXY_URL
 os.environ["https_proxy"] = PROXY_URL
 
-def get_or_create_dialogue(session, user):
-    """Получает или создаёт диалог с пользователем"""
-    dialogue = session.query(Dialogue).join(Dialogue.participants).filter_by(id=user.id).first()
+async def get_or_create_dialogue(session: AsyncSession, user):
+    result = await session.execute(
+        select(Dialogue).join(Dialogue.participants).filter_by(id=user.id)
+    )
+    dialogue = result.scalar()
     if not dialogue:
         dialogue = Dialogue(participants=[user])
         session.add(dialogue)
-        session.commit()
+        await session.commit()
     return dialogue
 
-def build_history(session: Session, dialogue: Dialogue):
-    """Генерирует список сообщений для OpenAI"""
-    messages = session.query(Message).filter_by(dialogue_id=dialogue.id).order_by(Message.sent_at).all()
+async def build_history(session: AsyncSession, dialogue: Dialogue):
+    result = await session.execute(
+        select(Message)
+        .filter_by(dialogue_id=dialogue.id)
+        .order_by(Message.sent_at)
+    )
+    messages = result.scalars().all()
     history = [{"role": "system", "content": "Ты — дружелюбный помощник."}]
     for msg in messages:
         role = "user" if msg.sender.role.name == "USER" else "assistant"
         history.append({"role": role, "content": msg.text})
-    return history[-20:]  # ограничим последние 20 сообщений
+    return history[-20:]
 
-def chat_with_gpt(session: Session, user, prompt: str):
-    """Отправляет сообщение в GPT и возвращает ответ"""
+async def chat_with_gpt(session: AsyncSession, user, prompt: str):
     try:
-        dialogue = get_or_create_dialogue(session, user)
+        dialogue = await get_or_create_dialogue(session, user)
 
-        # Сохраняем сообщение пользователя
         user_msg = Message(
             text=prompt,
             sender_id=user.id,
@@ -44,14 +47,14 @@ def chat_with_gpt(session: Session, user, prompt: str):
             sent_at=datetime.utcnow()
         )
         session.add(user_msg)
-        session.flush()
+        await session.flush()
 
-        messages = build_history(session, dialogue)
+        messages = await build_history(session, dialogue)
         messages.append({"role": "user", "content": prompt})
 
-        client = OpenAI()
+        client = AsyncOpenAI()
 
-        response = client.chat.completions.create(
+        response = await client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=messages,
             temperature=0.7,
@@ -60,15 +63,14 @@ def chat_with_gpt(session: Session, user, prompt: str):
 
         reply = response.choices[0].message.content
 
-        # Сохраняем ответ GPT
         assistant_msg = Message(
             text=reply,
-            sender_id=user.id,  # или `None`, если хочешь отличать системные
+            sender_id=user.id,
             dialogue=dialogue,
             sent_at=datetime.utcnow()
         )
         session.add(assistant_msg)
-        session.commit()
+        await session.commit()
 
         return reply
 

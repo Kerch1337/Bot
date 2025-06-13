@@ -1,6 +1,6 @@
 aiogram
 python-dotenv
 sqlalchemy
-psycopg2-binary
 alembic
 openai
+asyncpg

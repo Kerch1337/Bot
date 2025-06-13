@@ -4,19 +4,19 @@ from pathlib import Path
 from utils.logger import logger
 from datetime import datetime
 from database.model import Message as MessageModel
-from .commands import get_or_create_user
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from services.openai_client import chat_with_gpt
+from .commands import get_or_create_user
 
 router = Router()
 
 @router.message(F.text)
-async def handle_and_save_message(message: Message, session: Session):
+async def handle_and_save_message(message: Message, session: AsyncSession):
     tg_user = message.from_user
-    user = get_or_create_user(session, tg_user)
+    user = await get_or_create_user(session, tg_user)
     user_text = message.text.strip().lower()
 
-    # Всегда сохраняем пользовательское сообщение в БД
+    # Сохраняем сообщение пользователя
     try:
         new_msg = MessageModel(
             text=message.text,
@@ -24,13 +24,13 @@ async def handle_and_save_message(message: Message, session: Session):
             sent_at=datetime.utcnow()
         )
         session.add(new_msg)
-        session.commit()
+        await session.commit()
         logger.info(f"Сохранено сообщение от {tg_user.full_name} (id={user.id})")
     except Exception as e:
         logger.error(f"Ошибка сохранения сообщения: {str(e)}")
-        session.rollback()
+        await session.rollback()
 
-    # 🔁 Префикс-ответы
+    # Ответы на команды
     if user_text == "привет":
         await message.answer("И тебе привет! 😊")
     elif user_text == "помощь":
@@ -55,9 +55,9 @@ async def handle_and_save_message(message: Message, session: Session):
             logger.error(f"Ошибка отправки изображения: {e}")
             await message.answer("Не удалось загрузить изображение 😢")
     else:
-        # 👇 GPT-ответ
+        # GPT-ответ
         try:
-            reply = chat_with_gpt(session, user, message.text)
+            reply = await chat_with_gpt(session, user, message.text)
             await message.answer(reply)
             logger.info(f"Ответ от GPT отправлен пользователю {tg_user.full_name}")
         except Exception as e:
