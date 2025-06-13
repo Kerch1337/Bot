@@ -55,15 +55,15 @@ Bot/
 
 ## Создать файл .env в корне проекта:
 
-DB_URL=postgresql://user:password@host:port/name_base
+DB_URL=postgresql://user:password@host:port/name_base  
 BOT_TOKEN=ваш_токен_бота  
-POSTGRES_DB=mydatabase
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=qwerty123
-DB_HOST=db
-DB_PORT=5432
+POSTGRES_DB=mydatabase  
+POSTGRES_USER=postgres  
+POSTGRES_PASSWORD=qwerty123  
+DB_HOST=db  
+DB_PORT=5432  
 OPENAI_API_KEY=xxxx  
-PROXY_URL=http://login:password@ip:port
+PROXY_URL=http://login:password@ip:port  
 
 ## Собрать и запустить контейнеры с проектом:
 
