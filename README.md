@@ -55,7 +55,7 @@ Bot/
 
 ## Создать файл .env в корне проекта:
 
-DB_URL=postgresql://user:password@host:port/name_base  
+DB_URL=postgresql+asyncpg://user:password@host:port/name_base  
 BOT_TOKEN=ваш_токен_бота  
 POSTGRES_DB=mydatabase  
 POSTGRES_USER=postgres  
