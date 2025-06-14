@@ -1,6 +1,6 @@
 # Telegram Bot на aiogram 3.x с Docker
 
-Простой Telegram-бот с обработкой команд, текстовых сообщений и интеграцией с PostgreSQL.
+Простой Telegram-бот с обработкой команд и текстовых сообщений, интеграцией с openAI и PostgreSQL.
 
 ## Функционал
 - Обработка команды `/start` - начать общение
@@ -83,3 +83,6 @@ docker-compose run --rm alembic alembic downgrade -1
 
 ## Команда чтобы зайти в БД:
 docker exec -it pg_db psql -U postgres -d mydatabase
+
+## Посмотреть логи контейнера:
+docker logs telegram_bot

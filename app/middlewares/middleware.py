@@ -1,6 +1,5 @@
 from aiogram.dispatcher.middlewares.base import BaseMiddleware
 from typing import Callable, Awaitable, Dict, Any
-from sqlalchemy.ext.asyncio import AsyncSession
 
 class DbSessionMiddleware(BaseMiddleware):
     def __init__(self, session_factory):

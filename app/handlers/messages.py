@@ -1,4 +1,4 @@
-from aiogram import Router, types, F
+from aiogram import Router, F
 from aiogram.types import FSInputFile, Message
 from pathlib import Path
 from utils.logger import logger
@@ -7,6 +7,7 @@ from database.model import Message as MessageModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from services.openai_client import chat_with_gpt
 from .commands import get_or_create_user
+from services.openai_client import get_or_create_dialogue
 
 router = Router()
 
@@ -18,9 +19,12 @@ async def handle_and_save_message(message: Message, session: AsyncSession):
 
     # Сохраняем сообщение пользователя
     try:
+        dialogue = await get_or_create_dialogue(session, user)
+
         new_msg = MessageModel(
             text=message.text,
             sender_id=user.id,
+            dialogue=dialogue,
             sent_at=datetime.utcnow()
         )
         session.add(new_msg)

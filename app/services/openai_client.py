@@ -40,15 +40,6 @@ async def chat_with_gpt(session: AsyncSession, user, prompt: str):
     try:
         dialogue = await get_or_create_dialogue(session, user)
 
-        user_msg = Message(
-            text=prompt,
-            sender_id=user.id,
-            dialogue=dialogue,
-            sent_at=datetime.utcnow()
-        )
-        session.add(user_msg)
-        await session.flush()
-
         messages = await build_history(session, dialogue)
         messages.append({"role": "user", "content": prompt})
 
